@@ -1,7 +1,8 @@
 sap.ui.define([
     "sap/m/MessageToast",
-    "sap/m/MessageBox"
-], function(MessageToast, MessageBox) {
+    "sap/m/MessageBox",
+	'sap/m/Text'
+], function(MessageToast, MessageBox, Text) {
     'use strict';
 
     return {
@@ -237,7 +238,6 @@ sap.ui.define([
             oButton1.attachPress(function (evt) {
                 var batch = sap.ui.getCore().byId("Batch").getValue()
                 var qty = sap.ui.getCore().byId("Qty").getValue()
-                
                 if(batch == "") {
                     sap.m.MessageToast.show("Please Enter Batch");
                 } else if (qty == "") {
@@ -261,7 +261,7 @@ sap.ui.define([
                                             }
                                         });
 
-                                        console.log("here")
+                                        // console.log("here")
                                         oAssignBatch.callFunction("/PickAndBatchSplitOneItem", {
                                             method: "POST",
                                             urlParameters: {                    
@@ -876,183 +876,236 @@ sap.ui.define([
                 });
 
         },
-
-        addBatchBakery: function(oEvent) {
+        addBatchBakery: function (oEvent) {
             var transportOrder = oEvent.getSource().getParent().getParent().getBindingContext().getObject().transportOrder;
             var material = "000000000000" + oEvent.getSource().getParent().getParent().getSelectedContexts()[0].getObject().material;
-            material = material.substr(material.length-18);
+            material = material.substr(material.length - 18);
             var totalQaunt = oEvent.getSource().getParent().getParent().getSelectedContexts()[0].getObject().quant
+            var plant = oEvent.getSource().getParent().getParent().getBindingContext().getObject().plant;
+            var Odelivery = oEvent.getSource().getParent().getParent().getSelectedContexts()[0].getObject().outboundDelivery;
+            Odelivery = Odelivery.substr(Odelivery.length - 8);
+            var mixtype = oEvent.getSource().getParent().getParent().getSelectedContexts()[0].getObject().mixtype;
             var batch;
             var qty;
             var extensionAPI = this.extensionAPI
+            if (sap.ui.getCore().byId("OK") === undefined) {
+                var oButton1 = new sap.m.Button("OK", {
+                    text: "OK"
+                });
+            }
+            else if (sap.ui.getCore().byId("OK") != undefined) {
+                var oButton1 = sap.ui.getCore().byId("OK");
+            }
 
-            var oButton2 = new sap.m.Button("Cancel", {
-                text: "Cancel"
-            });
+            if (sap.ui.getCore().byId("Continue") === undefined) {
+                var oButton4 = new sap.m.Button("Continue", {
+                    text: "Continue"
+                });
+            }
+            else if (sap.ui.getCore().byId("Continue") != undefined) {
+                var oButton4 = sap.ui.getCore().byId("Continue");
+            }
 
-            var oButton1 = new sap.m.Button("OK", {
-                text: "OK"
-            });
-
-            var oButton3 = new sap.m.Button("Cancel2", {
-                text: "Cancel"
-            });
-
-            var oButton4 = new sap.m.Button("Continue", {
-                text: "Continue"
-            });
-
+            if (sap.ui.getCore().byId("Cancel") === undefined) {
+                var oButton2 = new sap.m.Button("Cancel", {
+                    text: "Cancel"
+                });
+            }
+            else if (sap.ui.getCore().byId("Cancel") != undefined) {
+                var oButton2 = sap.ui.getCore().byId("Cancel");
+            }
+            if (sap.ui.getCore().byId("Cancel2") === undefined) {
+                var oButton3 = new sap.m.Button("Cancel2", {
+                    text: "Cancel"
+                });
+            }
+            else if (sap.ui.getCore().byId("Cancel2") != undefined) {
+                var oButton3 = sap.ui.getCore().byId("Cancel2");
+            }
+            if (sap.ui.getCore().byId("Cancel3") === undefined) {
+                var oButton5 = new sap.m.Button("Cancel3", {
+                    text: "Cancel"
+                });
+            }
+            else if (sap.ui.getCore().byId("Cancel3") != undefined) {
+                var oButton5 = sap.ui.getCore().byId("Cancel3");
+            }
             oButton3.attachPress(function (evt) {
-                sap.ui.getCore().byId("Dialog2").close();
-                sap.ui.getCore().byId("Dialog2").destroy();
-                sap.ui.getCore().byId("Dialog1").close();
-                sap.ui.getCore().byId("Dialog1").destroy();
-            });
 
+                if (sap.ui.getCore().byId("Dialog1") != undefined) {
+                    sap.ui.getCore().byId("Dialog1").close();
+                    sap.ui.getCore().byId("Dialog1").destroy();
+                }
+
+                if (sap.ui.getCore().byId("Dialog2") != undefined) {
+                    sap.ui.getCore().byId("Dialog2").close();
+                    sap.ui.getCore().byId("Dialog2").destroy();
+                }
+                // sap.ui.getCore().byId("Dialog2").close();
+                // sap.ui.getCore().byId("Dialog2").destroy();
+                // sap.ui.getCore().byId("Dialog1").close();
+                // sap.ui.getCore().byId("Dialog1").destroy();
+            });
+            oButton5.attachPress(function (evt) {
+
+                if (sap.ui.getCore().byId("Dialog1") != undefined) {
+                    sap.ui.getCore().byId("Dialog1").close();
+                    sap.ui.getCore().byId("Dialog1").destroy();
+                }
+
+                if (sap.ui.getCore().byId("Dialog2") != undefined) {
+                    sap.ui.getCore().byId("Dialog2").close();
+                    sap.ui.getCore().byId("Dialog2").destroy();
+                }
+
+                if (sap.ui.getCore().byId("Dialog3") != undefined) {
+                    sap.ui.getCore().byId("Dialog3").close();
+                    sap.ui.getCore().byId("Dialog3").destroy();
+                }
+
+                if (sap.ui.getCore().byId("Dialog4") != undefined) {
+                    sap.ui.getCore().byId("Dialog4").close();
+                    sap.ui.getCore().byId("Dialog4").destroy();
+                }
+            });
             oButton4.attachPress(function (evt) {
                 var returnMessage = ""
                 var oBakeryList = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/ZSCM_PICKINGAPP_SRV");
 
                 oBakeryList.read("/ZSCM_I_Bakery_ODPickList_L2?$filter=transportOrder eq \'" + transportOrder + "\' and material eq \'" + material + "\'", {
-                    success: function(oData, oResponse) {
+                    success: function (oData, oResponse) {
                         var stopFlag = qty;
-                        for(let i=0; i<(oData.results.length); i++) {
-                            var outboundDelivery = "000000000" + oData.results[i].outboundDelivery
-                            outboundDelivery = outboundDelivery.substr(outboundDelivery.length-10);
-                            var item = "0000" + oData.results[i].item
-                            item = item.substr(item.length-6);
-                            var uom = oData.results[i].uom
-                            var quant = parseInt(oData.results[i].quant)
-                            var pickQaunt = parseInt(oData.results[i].pickedQuantBatch)
-                            var leftToPick = quant-pickQaunt;
-                            var setPick = 0
-                            var setQuant = 0
-                            var temp = parseInt(stopFlag,10);
-                            if (leftToPick < temp) {
-                                setQuant = leftToPick
-                            } else {
-                                setQuant = temp
-                            }
-                            stopFlag = parseInt(stopFlag,10) - quant;
-                            if (stopFlag < 0 ) {
-                                var setPick = pickQaunt + setQuant;
-                                var oAssignBatch = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2");
+                        for (let i = 0; i < (oData.results.length); i++) {
+                            if (Odelivery == oData.results[i].outboundDelivery) {
 
-                                oAssignBatch.callFunction("/PickAndBatchSplitOneItem", {
-                                    method: "POST",
-                                    urlParameters: {                    
-                                        DeliveryDocument: outboundDelivery,
-                                        DeliveryDocumentItem: item,
-                                        SplitQuantity: setPick, 
-                                        SplitQuantityUnit: uom,
-                                        Batch: batch
-                                    },
-                                    success: function(oData, oResponse) {
-                                                //console.log(data);
-                                        returnMessage = returnMessage + " delivery " + outboundDelivery + " was short picked. Please select another batch. "
-                                        extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_PickList_S2_L1--BulkProd::Table");
-                                        extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_C_PICKINGAPP--ScenarioNoHU::Table");
-                                                
-                                    },
-                                    error: function () {     
-                                        //console.log(data)
-                                        var sMsg = 'Unable to assign Batch.'
-                                        sap.m.MessageBox.error(sMsg);
-                                    }
-                                })
-                                break;
-                            } else {
-                                var setPick = pickQaunt + quant;
-                                var oAssignBatch = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2");
-
-                                oAssignBatch.callFunction("/PickAndBatchSplitOneItem", {
-                                    method: "POST",
-                                    urlParameters: {                    
-                                        DeliveryDocument: outboundDelivery,
-                                        DeliveryDocumentItem: item,
-                                        SplitQuantity: setPick, 
-                                        SplitQuantityUnit: uom,
-                                        Batch: batch
-                                    },
-                                    success: function(oData, oResponse) {
-                                                //console.log(data);
-                                        returnMessage = returnMessage + " delivery " + outboundDelivery + " was short picked. Please select another batch. "
-                                        extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_PickList_S2_L1--BulkProd::Table")
-                                        extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_C_PICKINGAPP--ScenarioNoHU::Table")
-                                                
-                                    },
-                                    error: function () {     
-                                        //console.log(data)
-                                        var sMsg = 'Unable to assign Batch.'
-                                        sap.m.MessageBox.error(sMsg);
-                                    }
-                                })
-                            }
-                            
-                        }
-                        sap.m.MessageToast.show(returnMessage);
-                    
-                    },
-                    error: function (oError) { 
-                        console.log(oError)
-                        sap.m.MessageBox.error(oError);
-                    }, 
-                    
-                })
-            
-                sap.ui.getCore().byId("Dialog1").close();
-                sap.ui.getCore().byId("Dialog1").destroy();
-                sap.ui.getCore().byId("Dialog2").close();
-                sap.ui.getCore().byId("Dialog2").destroy();
-            });
-
-            oButton2.attachPress(function (evt) {
-                sap.ui.getCore().byId("Dialog1").close();
-                sap.ui.getCore().byId("Dialog1").destroy();
-                sap.ui.getCore().byId("Dialog2").close();
-                sap.ui.getCore().byId("Dialog2").destroy();
-            });
-
-            oButton1.attachPress(function (evt) {
-                qty = sap.ui.getCore().byId("Qty").getValue()
-                batch = sap.ui.getCore().byId("Batch").getValue()
-                var obatchCheck = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/ZSCM_PICKINGAPP_SRV");
-                obatchCheck.read("/ZSCM_I_ValidBatch?$filter=Matnr eq \'" + material + "\' and Werks eq \'" + plant + "\' and Charg eq \'" + batch + "\'", {
-                    success: function(oData, oResponse) {
-                        if (oData.results.length > 0) {
-                            if (qty == "") {
-                                sap.m.MessageToast.show("Please Enter Qty");
-                            } else {
-                                sap.ui.getCore().byId("Dialog1").close();
-                                sap.ui.getCore().byId("Dialog1").destroy();
-                                sap.ui.getCore().byId("Dialog2").destroy();
-                                if (qty < parseInt(totalQaunt, 10)) {
-                                    oDialog2.open() 
+                                var outboundDelivery = "000000000" + oData.results[i].outboundDelivery
+                                outboundDelivery = outboundDelivery.substr(outboundDelivery.length - 10);
+                                var item = "0000" + oData.results[i].item
+                                item = item.substr(item.length - 6);
+                                var uom = oData.results[i].uom
+                                var quant = parseInt(oData.results[i].quant)
+                                var pickQaunt = parseInt(oData.results[i].pickedQuantBatch)
+                                // var leftToPick = quant-pickQaunt; After batch split the line returns remaining values only not the whole quantity
+                                var leftToPick = quant;
+                                var setPick = 0
+                                var setQuant = 0
+                                var temp = parseInt(stopFlag, 10);
+                                if (leftToPick < temp) {
+                                    setQuant = leftToPick
                                 } else {
-                                    var oBakeryList = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/ZSCM_PICKINGAPP_SRV");
+                                    setQuant = temp
+                                }
+                                stopFlag = parseInt(stopFlag, 10) - quant;
+                                if (stopFlag < 0) {
+                                    // var setPick = pickQaunt + setQuant;
+                                    var setPick = setQuant;
+                                    // var oAssignBatch = new sap.ui.model.odata.v2.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2");
+                                    var oAssignBatchEtag = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2");
 
-                                    oBakeryList.read("/ZSCM_I_Bakery_ODPickList_L2?$filter=transportOrder eq \'" + transportOrder + "\' and material eq \'" + material + "\'", {
-                                        success: function(oData, oResponse) {
-                                            for(let i=0; i<(oData.results.length); i++) {
-                                                var outboundDelivery = "000000000" + oData.results[i].outboundDelivery
-                                                outboundDelivery = outboundDelivery.substr(outboundDelivery.length-10);
-                                                var item = "0000" + oData.results[i].item
-                                                item = item.substr(item.length-6);
-                                                var uom = oData.results[i].uom
-                                                var quant = parseInt(oData.results[i].quant,10);
-                                                var oAssignBatch = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2");
+                                    oAssignBatchEtag.read("/A_OutbDeliveryItem(DeliveryDocument=\'" + outboundDelivery + "\',DeliveryDocumentItem=\'" + item + "\')", {
+                                        success: function (oData, oResponse) {
+                                            console.log(oData)
+                                            console.log(oResponse.headers.etag)
 
-                                                oAssignBatch.callFunction("/PickAndBatchSplitOneItem", {
+                                            var oAssignBatch = new sap.ui.model.odata.v2.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2", {
+                                                headers: {
+                                                    "If-match": "*"
+                                                }
+                                            });
+
+                                            // console.log("here")
+                                            // oAssignBatch.callFunction("/PickAndBatchSplitOneItem",
+                                            //     {
+                                            //         method: "POST",
+                                            //         urlParameters: {
+                                            //             DeliveryDocument: outboundDelivery,
+                                            //             DeliveryDocumentItem: item,
+                                            //             SplitQuantity: setPick,
+                                            //             SplitQuantityUnit: uom,
+                                            //             Batch: batch
+                                            //         },
+                                            oAssignBatch.callFunction("/PickAndBatchSplitOneItem", {
+                                                method: "POST",
+                                                urlParameters: {
+                                                    DeliveryDocument: outboundDelivery,
+                                                    DeliveryDocumentItem: item,
+                                                    SplitQuantity: setPick,
+                                                    SplitQuantityUnit: uom,
+                                                    Batch: batch
+                                                },
+                                                success: function (oData, oResponse) {
+                                                    //console.log(data);
+                                                    // returnMessage = returnMessage + " delivery " + outboundDelivery + " was short picked. Please select another batch. "
+                                                    sap.m.MessageToast.show("Batch " + batch + " added to delivery " + outboundDelivery, {
+                                                        duration: 3000,                  // default
+                                                        width: "15em",                   // default
+                                                        my: "center bottom",             // default
+                                                        at: "center bottom",             // default
+                                                        of: window,                      // default
+                                                        offset: "0 0",                   // default
+                                                        collision: "fit fit",            // default
+                                                        onClose: null,                   // default
+                                                        autoClose: true,                 // default
+                                                        animationTimingFunction: "ease", // default
+                                                        animationDuration: 1000,         // default
+                                                        closeOnBrowserNavigation: true   // default
+                                                    });
+                                                    // extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_PickList_S2_L1--BulkProd::Table");
+                                                    // extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_C_PICKINGAPP--ScenarioNoHU::Table");
+
+                                                    extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_L2--to_PickList::Table");
+                                                    extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_PickList_L2--to_ODPickList::Table");
+                                                }.bind(this),
+                                                error: function () {
+                                                    //console.log(data)
+                                                    var sMsg = 'Unable to assign Batch.'
+                                                    // sap.m.MessageBox.error(sMsg);
+                                                    sap.m.MessageToast.show(sMsg);
+                                                }
+                                            })
+                                        }
+                                    })
+                                    break;
+                                } else {
+                                    var setPick = pickQaunt + quant;
+                                    /*   var oAssignBatch = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2");
+      
+                                      oAssignBatch.callFunction("/PickAndBatchSplitOneItem", {
+                                          method: "POST",
+                                          urlParameters: {                    
+                                              DeliveryDocument: outboundDelivery,
+                                              DeliveryDocumentItem: item,
+                                              SplitQuantity: setPick, 
+                                              SplitQuantityUnit: uom,
+                                              Batch: batch
+                                          }, */
+                                    var oAssignBatchEtag = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2");
+
+                                    oAssignBatchEtag.read("/A_OutbDeliveryItem(DeliveryDocument=\'" + outboundDelivery + "\',DeliveryDocumentItem=\'" + item + "\')", {
+                                        success: function (oData, oResponse) {
+                                            console.log(oData)
+                                            console.log(oResponse.headers.etag)
+
+                                            var oAssignBatch = new sap.ui.model.odata.v2.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2", {
+                                                headers: {
+                                                    "If-match": "*"
+                                                }
+                                            });
+
+                                            // console.log("here")
+                                            oAssignBatch.callFunction("/PickAndBatchSplitOneItem",
+                                                {
                                                     method: "POST",
-                                                    urlParameters: {                    
+                                                    urlParameters: {
                                                         DeliveryDocument: outboundDelivery,
                                                         DeliveryDocumentItem: item,
-                                                        SplitQuantity: quant, 
+                                                        SplitQuantity: setPick,
                                                         SplitQuantityUnit: uom,
                                                         Batch: batch
                                                     },
-                                                    success: function(oData, oResponse) {
+                                                    success: function (oData, oResponse) {
                                                         //console.log(data);
+                                                        // returnMessage = returnMessage + " delivery " + outboundDelivery + " was short picked. Please select another batch. "
                                                         sap.m.MessageToast.show("Batch " + batch + " added to delivery " + outboundDelivery, {
                                                             duration: 3000,                  // default
                                                             width: "15em",                   // default
@@ -1066,68 +1119,504 @@ sap.ui.define([
                                                             animationTimingFunction: "ease", // default
                                                             animationDuration: 1000,         // default
                                                             closeOnBrowserNavigation: true   // default
-                                                        });                                                        
-                                                        extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_PickList_S2_L1--BulkProd::Table");
-                                                        extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_C_PICKINGAPP--ScenarioNoHU::Table");
-                                                                
-                                                    },
-                                                    error: function () {     
+                                                        });
+                                                        // extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_PickList_S2_L1--BulkProd::Table")
+                                                        // extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_C_PICKINGAPP--ScenarioNoHU::Table")
+
+                                                        extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_L2--to_PickList::Table");
+                                                        extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_PickList_L2--to_ODPickList::Table");
+                                                    }.bind(this),
+                                                    error: function () {
                                                         //console.log(data)
                                                         var sMsg = 'Unable to assign Batch.'
-                                                        sap.m.MessageBox.error(sMsg);
+                                                        // sap.m.MessageBox.error(sMsg);
+                                                        sap.m.MessageToast.show(sMsg);
                                                     }
                                                 })
+                                        }
+                                    })
+                                }
+                            }
+
+                        }
+                        // sap.m.MessageToast.show(returnMessage);
+
+                    },
+                    error: function (oError) {
+                        console.log(oError)
+                        sap.m.MessageBox.error(oError);
+                    },
+
+                })
+                if (sap.ui.getCore().byId("Dialog1") != undefined) {
+                    sap.ui.getCore().byId("Dialog1").close();
+                    sap.ui.getCore().byId("Dialog1").destroy();
+                }
+
+                if (sap.ui.getCore().byId("Dialog2") != undefined) {
+                    sap.ui.getCore().byId("Dialog2").close();
+                    sap.ui.getCore().byId("Dialog2").destroy();
+                }
+            });
+
+            oButton2.attachPress(function (evt) {
+                if (sap.ui.getCore().byId("Dialog1") != undefined) {
+                    sap.ui.getCore().byId("Dialog1").close();
+                    sap.ui.getCore().byId("Dialog1").destroy();
+                }
+
+                if (sap.ui.getCore().byId("Dialog2") != undefined) {
+                    sap.ui.getCore().byId("Dialog2").close();
+                    sap.ui.getCore().byId("Dialog2").destroy();
+                }
+            });
+
+            oButton1.attachPress(function (evt) {
+                qty = sap.ui.getCore().byId("Qty").getValue()
+                batch = sap.ui.getCore().byId("Batch").getValue()
+                var obatchCheck = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/ZSCM_PICKINGAPP_SRV");
+                obatchCheck.read("/ZSCM_I_ValidBatch?$filter=Matnr eq \'" + material + "\' and Werks eq \'" + plant + "\' and Charg eq \'" + batch + "\'", {
+                    success: function (oData, oResponse) {
+                        if (oData.results.length > 0) {
+                            if (qty == "") {
+                                sap.m.MessageToast.show("Please Enter Qty");
+                            }
+                            else if (parseInt(qty, 10) > oData.results[0].stock) {
+
+                                if (sap.ui.getCore().byId("Dialog1") != undefined) {
+                                    sap.ui.getCore().byId("Dialog1").close();
+                                    sap.ui.getCore().byId("Dialog1").destroy();
+                                }
+
+                                if (sap.ui.getCore().byId("Dialog2") != undefined) {
+                                    sap.ui.getCore().byId("Dialog2").close();
+                                    sap.ui.getCore().byId("Dialog2").destroy();
+                                }
+
+                                if (sap.ui.getCore().byId("Dialog2") == undefined) {
+                                    var oDialog4 = new sap.m.Dialog("Dialog4", {
+                                        title: "Error",
+                                        state: sap.ui.core.ValueState.error,
+                                        content: [
+                                            new sap.m.Text({ text: "Insufficient inventory for the nominated batch." })
+                                        ],
+                                        contentWidth: "20%",
+                                        closeOnNavigation: true,
+                                        buttons: [oButton5]
+                                    });
+                                }
+                                oDialog4.open();
+
+                            }
+                            else if (parseInt(qty, 10) < oData.results[0].stock) {
+                                // sap.ui.getCore().byId("Dialog1").close();
+                                //  sap.ui.getCore().byId("Dialog1").destroy();
+                                //  sap.ui.getCore().byId("Dialog2").close();
+                                //  sap.ui.getCore().byId("Dialog2").destroy();
+
+                                if (sap.ui.getCore().byId("Dialog1") != undefined) {
+                                    sap.ui.getCore().byId("Dialog1").close();
+                                    sap.ui.getCore().byId("Dialog1").destroy();
+                                }
+
+                                if (sap.ui.getCore().byId("Dialog2") != undefined) {
+                                    sap.ui.getCore().byId("Dialog2").close();
+                                    sap.ui.getCore().byId("Dialog2").destroy();
+                                }
+                                if (parseInt(qty, 10) < parseInt(totalQaunt, 10)) {
+
+                                    var oDialog2 = new sap.m.Dialog("Dialog2", {
+                                        title: "Warning",
+                                        state: sap.ui.core.ValueState.Warning,
+                                        content: [
+                                            new sap.m.Text({ text: "You have short picked the material. If you plan to split batch continue otherwise cancel and amend delivery." })
+                                        ],
+                                        contentWidth: "20%",
+                                        closeOnNavigation: true,
+                                        buttons: [oButton3, oButton4]
+                                    });
+                                    oDialog2.open();
+                                }
+                                else if ((parseInt(qty, 10) > parseInt(totalQaunt, 10)) && (mixtype == "Mixed")) {
+                                    var oDialog3 = new sap.m.Dialog("Dialog3", {
+                                        title: "Error",
+                                        state: sap.ui.core.ValueState.error,
+                                        content: [
+                                            new sap.m.Text({ text: "Overpicked than the requested quantity in delivery." })
+                                        ],
+                                        contentWidth: "20%",
+                                        closeOnNavigation: true,
+                                        buttons: [oButton5]
+                                    });
+                                    oDialog3.open()
+                                }
+
+                                else if ((parseInt(qty, 10) > parseInt(totalQaunt, 10)) && (mixtype != "Mixed"))
+                                // Condition incase of overpicked
+                                {
+
+                                    // Condition for overflow of quantity - split the quantity for the same material for two different deliveries
+                                    // Total to be picked - totalQuant
+                                    // qty - from screen input
+                                    var oBakeryList = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/ZSCM_PICKINGAPP_SRV");
+                                    oBakeryList.read("/ZSCM_I_Bakery_ODPickList_L2?$filter=transportOrder eq \'" + transportOrder + "\' and material eq \'" + material + "\'", {
+                                        success: function (oData, oResponse) {
+                                            var tobepicked = parseInt(totalQaunt, 10);
+                                            for (let i = 0; i < (oData.results.length); i++) {
+                                                // iteration to assign the max allowed quantity for the selected delivery
+                                                if (Odelivery == oData.results[i].outboundDelivery) {
+                                                    var outboundDelivery = "000000000" + oData.results[i].outboundDelivery
+                                                    outboundDelivery = outboundDelivery.substr(outboundDelivery.length - 10);
+                                                    var item = "0000" + oData.results[i].item
+                                                    item = item.substr(item.length - 6);
+                                                    var uom = oData.results[i].uom
+                                                    var quant = parseInt(oData.results[i].quant, 10);
+                                                    // Use the to be picked for next iteration
+                                                    tobepicked = qty - tobepicked;
+
+                                                    var oAssignBatchEtag = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2");
+
+                                                    oAssignBatchEtag.read("/A_OutbDeliveryItem(DeliveryDocument=\'" + outboundDelivery + "\',DeliveryDocumentItem=\'" + item + "\')", {
+                                                        success: function (oData, oResponse) {
+                                                            console.log(oData)
+                                                            console.log(oResponse.headers.etag)
+
+                                                            var oAssignBatch = new sap.ui.model.odata.v2.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2", {
+                                                                headers: {
+                                                                    "If-match": "*"
+                                                                }
+                                                            });
+
+                                                            // console.log("here")
+                                                            oAssignBatch.callFunction("/PickAndBatchSplitOneItem",
+                                                                {
+                                                                    method: "POST",
+                                                                    urlParameters: {
+                                                                        DeliveryDocument: outboundDelivery,
+                                                                        DeliveryDocumentItem: item,
+                                                                        SplitQuantity: quant,
+                                                                        SplitQuantityUnit: uom,
+                                                                        Batch: batch
+                                                                    },
+
+                                                                    success: function (oData, oResponse) {
+                                                                        //console.log(data);
+                                                                        sap.m.MessageToast.show("Batch " + batch + " added to delivery " + outboundDelivery, {
+                                                                            duration: 3000,                  // default
+                                                                            width: "15em",                   // default
+                                                                            my: "center bottom",             // default
+                                                                            at: "center bottom",             // default
+                                                                            of: window,                      // default
+                                                                            offset: "0 0",                   // default
+                                                                            collision: "fit fit",            // default
+                                                                            onClose: null,                   // default
+                                                                            autoClose: true,                 // default
+                                                                            animationTimingFunction: "ease", // default
+                                                                            animationDuration: 1000,         // default
+                                                                            closeOnBrowserNavigation: true   // default
+                                                                        });
+                                                                        extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_L2--to_PickList::Table");
+                                                                        extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_PickList_L2--to_ODPickList::Table");
+
+                                                                    }.bind(this),
+                                                                    error: function () {
+                                                                        //console.log(data)
+                                                                        var sMsg = 'Unable to assign Batch.'
+                                                                        // sap.m.MessageBox.error(sMsg);
+                                                                        sap.m.MessageToast.show(sMsg);
+                                                                    }
+                                                                })
+                                                        }
+                                                    })
+
+
+                                                }
+                                            }
+                                            // Second Iteration
+                                            if (tobepicked > 0) {
+                                                for (let i = 0; i < (oData.results.length); i++) {
+                                                    // iteration to assign the max allowed quantity for the selected delivery
+                                                    if (tobepicked > 0) {
+                                                        if (Odelivery != oData.results[i].outboundDelivery) {
+                                                            var outboundDelivery1 = "000000000" + oData.results[i].outboundDelivery
+                                                            outboundDelivery1 = outboundDelivery1.substr(outboundDelivery1.length - 10);
+                                                            var item1 = "0000" + oData.results[i].item
+                                                            item1 = item1.substr(item1.length - 6);
+                                                            var uom1 = oData.results[i].uom
+                                                            var quant1 = parseInt(oData.results[i].quant, 10);
+                                                            if (quant1 > tobepicked) {
+                                                                //  // to be picked = 0 as there's no next iteration & load the current with available quantity
+                                                                quant1 = tobepicked;
+                                                                tobepicked = 0;
+
+                                                            }
+                                                            else if (quant1 == tobepicked) {
+                                                                // to be picked = 0 as there's no next iteration & full load the current
+                                                                tobepicked = 0;
+
+                                                            }
+                                                            else if (quant1 < tobepicked) {
+                                                                // Use the to be picked for next iteration & full load the current
+                                                                tobepicked = tobepicked - quant1;
+
+                                                            } else if (quant1 == 0) {
+                                                                // exit loop
+                                                                break;
+
+                                                            }
+                                                            var oRemoveHU = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/ZSCM_PICKINGACTION_SRV");
+
+                                                            oRemoveHU.callFunction("/addBatchToDelivery", {
+                                                                method: "POST",
+                                                                urlParameters: {
+                                                                    batch: batch,
+                                                                    deliveryItem: item1,
+                                                                    deliveryNumber: outboundDelivery1,
+                                                                    uom: uom1,
+                                                                    pickAmount: quant1,
+                                                                    qty: quant1
+                                                                }
+                                                                // ,
+                                                                // success: function(oData, oResponse) {
+                                                                //     sap.m.MessageToast.show("Batch added", {
+                                                                //         duration: 3000,                  // default
+                                                                //         width: "15em",                   // default
+                                                                //         my: "center bottom",             // default
+                                                                //         at: "center bottom",             // default
+                                                                //         of: window,                      // default
+                                                                //         offset: "0 0",                   // default
+                                                                //         collision: "fit fit",            // default
+                                                                //         onClose: null,                   // default
+                                                                //         autoClose: true,                 // default
+                                                                //         animationTimingFunction: "ease", // default
+                                                                //         animationDuration: 1000,         // default
+                                                                //         closeOnBrowserNavigation: true   // default
+                                                                //     });
+                                                                //     extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_PickList_L2--to_ODPickList::Table");
+                                                                //     extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_L2--to_PickList::Table");
+
+                                                                // },
+                                                                // error: function(oError) {
+                                                                //     var sMsg = 'Unable to add batch.';
+                                                                //     sap.m.MessageToast.show(sMsg);
+                                                                // }, 
+                                                            })
+
+                                                            // var oAssignBatchEtag1 = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2");
+
+                                                            // oAssignBatchEtag1.read("/A_OutbDeliveryItem(DeliveryDocument=\'" + outboundDelivery1 + "\',DeliveryDocumentItem=\'" + item1 + "\')", {
+                                                            //     success: function (oData, oResponse) {
+                                                            //         console.log(oData)
+                                                            //         console.log(oResponse.headers.etag)
+
+                                                            //         var oAssignBatch1 = new sap.ui.model.odata.v2.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2", {
+                                                            //             headers: {
+                                                            //                 "If-match": "*"
+                                                            //             }
+                                                            //         });
+
+                                                            //         console.log("here")
+                                                            //         oAssignBatch1.callFunction("/PickAndBatchSplitOneItem",
+                                                            //             {
+                                                            //                 method: "POST",
+                                                            //                 urlParameters: {
+                                                            //                     DeliveryDocument: outboundDelivery1,
+                                                            //                     DeliveryDocumentItem: item1,
+                                                            //                     SplitQuantity: quant1,
+                                                            //                     SplitQuantityUnit: uom1,
+                                                            //                     Batch: batch
+                                                            //                 },
+                                                            //                 success: function (oData, oResponse) {
+                                                            //                     //console.log(data);
+                                                            //                     sap.m.MessageToast.show("Batch " + batch + " added to delivery " + outboundDelivery1 + " with quantity " + quant1, {
+                                                            //                         duration: 3000,                  // default
+                                                            //                         width: "15em",                   // default
+                                                            //                         my: "center bottom",             // default
+                                                            //                         at: "center bottom",             // default
+                                                            //                         of: window,                      // default
+                                                            //                         offset: "0 0",                   // default
+                                                            //                         collision: "fit fit",            // default
+                                                            //                         onClose: null,                   // default
+                                                            //                         autoClose: true,                 // default
+                                                            //                         animationTimingFunction: "ease", // default
+                                                            //                         animationDuration: 1000,         // default
+                                                            //                         closeOnBrowserNavigation: true   // default
+                                                            //                     });
+                                                            //                     // extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_PickList_S2_L1--BulkProd::Table");
+                                                            //                     // extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_C_PICKINGAPP--ScenarioNoHU::Table");
+
+                                                            //                     extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_PickList_L2--to_ODPickList::Table");
+                                                            //                     extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_L2--to_PickList::Table");
+                                                            //                 },
+                                                            //                 error: function () {
+                                                            //                     //console.log(data)
+                                                            //                     var sMsg = 'Unable to assign Batch.'
+                                                            //                     // sap.m.MessageBox.error(sMsg);
+                                                            //                     sap.m.MessageToast.show(sMsg);
+                                                            //                 }
+                                                            //             })
+                                                            //     }
+                                                            // })
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            // Second Iteration - End
+                                        }.bind(this),
+                                        error: function (oError) {
+                                            console.log(oError)
+                                        }
+                                    })
+                                }
+                                else {
+                                    // If picked quant & to be picked are of same quantity
+                                    var oBakeryList = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/ZSCM_PICKINGAPP_SRV");
+
+                                    oBakeryList.read("/ZSCM_I_Bakery_ODPickList_L2?$filter=transportOrder eq \'" + transportOrder + "\' and material eq \'" + material + "\'", {
+                                        success: function (oData, oResponse) {
+                                            for (let i = 0; i < (oData.results.length); i++) {
+                                                if (Odelivery == oData.results[i].outboundDelivery) {
+
+                                                    var outboundDelivery = "000000000" + oData.results[i].outboundDelivery
+                                                    outboundDelivery = outboundDelivery.substr(outboundDelivery.length - 10);
+                                                    var item = "0000" + oData.results[i].item
+                                                    item = item.substr(item.length - 6);
+                                                    var uom = oData.results[i].uom
+                                                    var quant = parseInt(oData.results[i].quant, 10);
+                                                    if (parseInt(qty, 10) < parseInt(quant, 10)) {
+                                                        quant = qty;
+                                                    }
+
+                                                    // var oAssignBatch = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2");
+
+                                                    // oAssignBatch.callFunction("/PickAndBatchSplitOneItem", {
+                                                    //     method: "POST",
+                                                    //     urlParameters: {                    
+                                                    //         DeliveryDocument: outboundDelivery,
+                                                    //         DeliveryDocumentItem: item,
+                                                    //         SplitQuantity: quant, 
+                                                    //         SplitQuantityUnit: uom,
+                                                    //         Batch: batch
+                                                    //     },
+
+                                                    var oAssignBatchEtag = new sap.ui.model.odata.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2");
+
+                                                    oAssignBatchEtag.read("/A_OutbDeliveryItem(DeliveryDocument=\'" + outboundDelivery + "\',DeliveryDocumentItem=\'" + item + "\')", {
+                                                        success: function (oData, oResponse) {
+                                                            console.log(oData)
+                                                            console.log(oResponse.headers.etag)
+
+                                                            var oAssignBatch = new sap.ui.model.odata.v2.ODataModel("/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=2", {
+                                                                headers: {
+                                                                    "If-match": "*"
+                                                                }
+                                                            });
+
+                                                            // console.log("here")
+                                                            oAssignBatch.callFunction("/PickAndBatchSplitOneItem",
+                                                                {
+                                                                    method: "POST",
+                                                                    urlParameters: {
+                                                                        DeliveryDocument: outboundDelivery,
+                                                                        DeliveryDocumentItem: item,
+                                                                        SplitQuantity: quant,
+                                                                        SplitQuantityUnit: uom,
+                                                                        Batch: batch
+                                                                    },
+                                                                    success: function (oData, oResponse) {
+                                                                        //console.log(data);
+                                                                        sap.m.MessageToast.show("Batch " + batch + " added to delivery " + outboundDelivery, {
+                                                                            duration: 3000,                  // default
+                                                                            width: "15em",                   // default
+                                                                            my: "center bottom",             // default
+                                                                            at: "center bottom",             // default
+                                                                            of: window,                      // default
+                                                                            offset: "0 0",                   // default
+                                                                            collision: "fit fit",            // default
+                                                                            onClose: null,                   // default
+                                                                            autoClose: true,                 // default
+                                                                            animationTimingFunction: "ease", // default
+                                                                            animationDuration: 1000,         // default
+                                                                            closeOnBrowserNavigation: true   // default
+                                                                        });
+                                                                        // extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_PickList_S2_L1--BulkProd::Table");
+                                                                        // extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_C_PICKINGAPP--ScenarioNoHU::Table");
+
+                                                                        extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_PickList_L2--to_ODPickList::Table");
+                                                                        extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_L2--to_PickList::Table");
+                                                                    }.bind(this),
+                                                                    error: function (oError) {
+                                                                        var sMsg = 'Unable to assign Batch.'
+                                                                        // sap.m.MessageBox.error(sMsg);
+                                                                        sap.m.MessageToast.show(sMsg);
+                                                                        console.log(oError)
+                                                                    }
+                                                                })
+                                                        }
+                                                    })
+                                                }
                                             }
                                         },
-                                        error: function (oError) { 
-                                            console.log(oError)        
+                                        error: function (oError) {
+                                            console.log(oError)
                                         }
-                                    }) 
+                                    })
                                 }
                                 extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_L2--PickList::Table");
                             }
                         } else {
                             var sMsg = 'Invalid Batch.'
                             sap.m.MessageBox.error(sMsg);
-                            sap.ui.getCore().byId("Dialog1").close();
-                            sap.ui.getCore().byId("Dialog1").destroy();
+                            // sap.ui.getCore().byId("Dialog1").close();
+                            // sap.ui.getCore().byId("Dialog1").destroy();
+
+                            if (sap.ui.getCore().byId("Dialog1") != undefined) {
+                                sap.ui.getCore().byId("Dialog1").close();
+                                sap.ui.getCore().byId("Dialog1").destroy();
+                            }
+
+                            extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_PickList_L2--to_ODPickList::Table");
+                            extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_L2--to_PickList::Table");
+                            extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_L2--PickList::Table");
+                            extensionAPI.refresh("pickingapp.pickingapp::sap.suite.ui.generic.template.ObjectPage.view.Details::ZSCM_I_Bakery_PickList_L2--to_ODPickList::Table");
                         }
-                    },
-                    error: function (data) { 
-                        console.log(data)        
-                    }  
-                });            
+                    }.bind(this),
+                    error: function (data) {
+                        console.log(data)
+                    }
+                });
             });
 
-            var oDialog = new sap.m.Dialog("Dialog1",{
-                title:"Scan Batch and Enter Quantity",
-                contentWidth:"20%",
+            var oDialog = new sap.m.Dialog("Dialog1", {
+                title: "Scan Batch and Enter Quantity",
+                contentWidth: "20%",
                 closeOnNavigation: true,
                 buttons: [oButton1, oButton2],
-                content:[
-                    new sap.m.Label({text:"Qty:", required: true}),
-                    new sap.m.Input({maxLength: 20, id: "Qty", type: "Number"}),
-                    new sap.m.Label({text:"Batch:", required: true}),
-                    new sap.m.Input({maxLength: 20, id: "Batch"})
+                content: [
+                    new sap.m.Label({ text: "Qty:", required: true }),
+                    new sap.m.Input({ maxLength: 20, id: "Qty", type: "Number" }),
+                    new sap.m.Label({ text: "Batch:", required: true }),
+                    new sap.m.Input({ maxLength: 20, id: "Batch" })
                 ]
             });
 
-            var oDialog2 = new sap.m.Dialog("Dialog2",{
-                title:"Warning",
-                state: sap.ui.core.ValueState.Warning,
-                content: [
-                    new sap.m.Text({ text: "You have short picked the material. If you plan to split batch continue otherwise cancel and amend delivery." })
-                ],
-                contentWidth:"20%",
-                closeOnNavigation: true,
-                buttons: [oButton3, oButton4]
-            });
+            // var oDialog2 = new sap.m.Dialog("Dialog2",{
+            //     title:"Warning",
+            //     state: sap.ui.core.ValueState.Warning,
+            //     content: [
+            //         new sap.m.Text({ text: "You have short picked the material. If you plan to split batch continue otherwise cancel and amend delivery." })
+            //     ],
+            //     contentWidth:"20%",
+            //     closeOnNavigation: true,
+            //     buttons: [oButton3, oButton4]
+            // });
 
             oDialog.addStyleClass("sapUiContentPadding");
             oDialog.open()
 
         }
-        
+
     };
 });
 

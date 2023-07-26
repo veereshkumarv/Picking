@@ -109,10 +109,14 @@
                                     <PropertyValue Property="Label" String="Ship To"/>
                                     <PropertyValue Property="Value" Path="shipToDesc"/>
                                 </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Label" String="Shipping Instructions"/>
+                            <PropertyValue Property="Value" Path="shipping_instructions"/>
+                        </Record>
                             </Collection>
                         </PropertyValue>
                     </Record>
-                </Annotation>
+                </Annotation> 
                 <Annotation Term="UI.HeaderInfo">
                     <Record>
                         <PropertyValue Property="TypeName" String="Outbound Delivery"/>
@@ -186,6 +190,10 @@
                             <PropertyValue Property="Label" String="Freight Order"/>
                             <PropertyValue Property="Value" Path="transportOrder"/>
                         </Record>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Label" String="Shipping Instructions"/>
+                            <PropertyValue Property="Value" Path="shipping_instructions"/>
+                        </Record>
                     </Collection>
                 </Annotation>
                 <Annotation Term="UI.SelectionFields">
@@ -197,6 +205,7 @@
                         <PropertyPath>carrier</PropertyPath>
                         <PropertyPath>pickingStatus</PropertyPath>
                         <PropertyPath>outboundDelivery</PropertyPath>
+                        <PropertyPath>shipping_instructions</PropertyPath>
                     </Collection>
                 </Annotation>
             </Annotations>

@@ -63,7 +63,7 @@
     "sap.ui5": {
         "flexEnabled": true,
         "dependencies": {
-            "minUI5Version": "1.108.0",
+            "minUI5Version": "1.108.16",
             "libs": {
                 "sap.m": {},
                 "sap.ui.core": {},
@@ -112,6 +112,25 @@
         },
         "extends": {
             "extensions": {
+                "sap.ui.viewExtensions": {
+                    "sap.suite.ui.generic.template.ObjectPage.view.Details": {
+                        "ReplaceFacet|ZSCM_C_PICKINGAPP|OutboundDelInfoPar": {
+                            "type": "XML",
+                            "className": "sap.ui.core.mvc.View",
+                            "viewName": "pickingapp.pickingapp.ext.view.ObjectPageContent",
+                            "sap.ui.generic.app": {
+                                "settings": {
+                                    "objectPageColumns": {
+                                        "screenSizeXL": 4,                                        
+                                        "useColumnLayoutForSmartForm": false
+                                    }
+                                },
+                                "title": "Outbound Delivery Information"
+                                
+                            }
+                        }
+                    }
+                },
                 "sap.ui.controllerExtensions": {
                     "sap.suite.ui.generic.template.ListReport.view.ListReport": {
                         "controllerName": "pickingapp.pickingapp.ext.controller.ListReportExt"
@@ -143,7 +162,7 @@
                                                 "requiresSelection": true
                                             }
                                         }
-                                    }  
+                                    }
                                 }
                             },
                             "ZSCM_I_Bakery_L2": {
@@ -219,7 +238,6 @@
                             }
                         }
                     }
-                              
                 }
             }
         }
